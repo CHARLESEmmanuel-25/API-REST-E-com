@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 app.use(morgan('tiny'));
 // Routes
 const users = new UsersRoutes();
-users.routes();
+users.defineRoutes();
 app.use(users.router)
 
 
