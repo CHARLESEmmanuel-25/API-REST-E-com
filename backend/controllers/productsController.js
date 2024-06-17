@@ -4,8 +4,12 @@ import Product from "../models/model.product.js";
 const productsController ={
 
     allProduct: async (req,res)=>{
+        let filter ={};
         try {
-            const products = await Product.find().select('name image -_id');
+            if(req.query.category){
+                filter = {category:req.query.category.split(',')};
+            }
+            const products = await Product.find(filter).select('name image -_id');
             res.status(200).json(products);
         } catch (err) {
             res.status(500).json({
@@ -95,8 +99,8 @@ const productsController ={
        
         console.log(updateProduct);
         try {
-            const Product = await Product.findByIdAndUpdate(id,updateProduct, {new: true});
-            res.status(200).json(user);
+            const productUpdate = await Product.findByIdAndUpdate(id,updateProduct, {new: true});
+            res.status(200).json(productUpdate);
         } catch (err) {
             res.status(500).json({
                 error: err.message,

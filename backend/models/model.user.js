@@ -15,6 +15,14 @@ const userSchema = mongoose.Schema({
     country: { type: String }
 }, { timestamps: true });
 
+userSchema.virtual('id').get(function (){
+    return this._id.toHexString();
+});
+
+userSchema.set('toJSON', {
+    virtual: true,
+})
+
 const User = mongoose.model('user', userSchema);
 
 export default User;
