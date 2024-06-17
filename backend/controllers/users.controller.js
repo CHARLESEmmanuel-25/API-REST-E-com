@@ -24,7 +24,8 @@ const usersController = {
                 {
                     userId: user.id
                 },
-                secret
+                secret,
+                {expiresIn: '1d'}
             );
             res.status(200).send({user: user.email, token: token});
           } else{
@@ -46,6 +47,24 @@ const usersController = {
     try {
       const users = await User.find().select("name phone email -_id");
       res.status(200).json(users);
+    } catch (err) {
+      res.status(500).json({
+        error: err.message,
+        success: false,
+      });
+    }
+  },
+
+  oneUser: async (req, res) => {
+    try {
+      const id = req.params.id;
+      if (!mongoose.isValidObjectId(id)) {
+        return res
+        .status(404)
+        .json({ message: "cette utilisateur n'existe pas" });
+      }
+      const user = await User.findById(id);
+      res.status(200).json(user);
     } catch (err) {
       res.status(500).json({
         error: err.message,

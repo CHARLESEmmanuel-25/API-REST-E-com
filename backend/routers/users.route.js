@@ -11,9 +11,14 @@ export default class UsersRoutes extends CoreRoutes {
 
   defineRoutes() {
     this.routes("get", `${api}/login`, usersController.login);
+
     this.routes("get", `${api}/users`, usersController.allUser);
+    this.routes("get", `${api}/users/:id`, usersController.oneUser);
+
     this.routes("post", `${api}/users`, usersController.createUser);
+
     this.routes("patch", `${api}/users/:id`, usersController.updateUser);
+
     this.routes("delete", `${api}/users/:id`, usersController.deleteUser);
   }
 }
