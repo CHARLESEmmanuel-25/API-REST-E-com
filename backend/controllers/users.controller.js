@@ -6,39 +6,48 @@ const usersController = {
 
   login: async (req, res) => {
 
-    try {
+    const { email, password } = req.body;
 
-        const user = await User.findOne({ email: req.body.email }).select(
-            "name email phone passwordHash"
-          );
-      
-          const passwordUser = req.body.passwordHash;
-         
-          if (!user) {
-            return res.status(400).send("la personne est introuvable");
-          }
-      
-          if (user && bcrypt.compareSync(passwordUser, user.passwordHash)) {
-            const secret = process.env.secret;
-            const token = jwt.sign(
-                {
-                    userId: user.id
-                },
-                secret,
-                {expiresIn: '1d'}
-            );
-            res.status(200).send({user: user.email, token: token});
-          } else{
-            res.status(400).send("mauvais mot de passe");
-          }
-      
-        
-    } catch (error) {
-        res.status(500).json({
-            error: error.message,
-            success: false,
-          });
+    // Vérifier si les champs requis sont remplis
+    if (!email || !password) {
+        return res.status(400).send("Veuillez remplir tous les champs requis.");
     }
+
+    try {
+        // Vérifier si l'utilisateur existe dans la base de données
+        const user = await User.findOne({ email }).select('name email phone passwordHash isAdmin');
+
+        if (!user) {
+            return res.status(404).send("Utilisateur non trouvé.");
+        }
+
+        // Vérifier si le mot de passe correspond
+        const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+
+        if (!isPasswordValid) {
+            return res.status(400).send("Mot de passe incorrect.");
+        }
+
+        // Générer le jeton JWT
+        const secret = process.env.secret;
+        const token = jwt.sign(
+            {
+                userId: user._id, 
+                isAdmin: user.isAdmin
+            },
+            secret,
+            { expiresIn: '1d' }
+        );
+
+        // Envoyer la réponse avec le jeton JWT et l'e-mail de l'utilisateur
+        res.status(200).json({ user: user.email, token });
+
+    } catch (error) {
+        // En cas d'erreur, renvoyer une réponse avec le statut 500 et l'erreur
+        res.status(500).json({ error: error.message });
+    }
+
+   
 
   },
 
@@ -75,13 +84,15 @@ const usersController = {
 
 
   createUser: async (req, res) => {
+    
     try {
       const salt = bcrypt.genSaltSync(10);
-
+      const password = req.body.passwordHash
+     
       const newUser = new User({
         name: req.body.name,
         email: req.body.email,
-        passwordHash: bcrypt.hashSync(req.body.password, salt),
+        passwordHash: bcrypt.hashSync(password, salt),
         phone: req.body.phone,
         isAdmin: req.body.isAdmin,
         street: req.body.street,
@@ -90,7 +101,7 @@ const usersController = {
         city: req.body.city,
         country: req.body.country,
       });
-      console.log(newUser.passwordHash);
+      console.log(newUser);
       const user = await newUser.save();
       res.status(200).json(user);
     } catch (err) {

@@ -6,15 +6,19 @@ import UsersRoutes from './routers/users.route.js'
 import ProductsRoutes from './routers/products.route.js';
 import CategorysRoutes from './routers/category.route.js';
 import cors from "cors";
+import authJwt from './helpers/jwt.js';
+import erroHandler from './helpers/error-handler.js';
 
 
-const PORT = process.env.PORT;
+
 const app = express();
 app.use(cors());
 app.options('*', cors());
 // Middleware
 app.use(bodyParser.json());
 app.use(morgan('tiny'));
+app.use(authJwt());
+app.use(erroHandler);
 // Routes
 const users = new UsersRoutes();
 const products = new ProductsRoutes;

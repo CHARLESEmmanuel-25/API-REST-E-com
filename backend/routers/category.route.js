@@ -10,9 +10,10 @@ export default class CategorysRoutes extends CoreRoutes {
   }
 
   defineRoutes() {
-    this.routes("get", `${api}/categorys`, categorysController.allCategory);
-    this.routes("post", `${api}/categorys`, categorysController.createCategory);
-    this.routes("patch", `${api}/categorys/:id`, categorysController.updateCategory);
-    this.routes("delete", `${api}/categorys/:id`, categorysController.deleteCategory);
+    this.routes("get", `${api}/categories`, categorysController.allCategory);
+    //route a ajouter GET categorie by id 
+    this.routes("post", `${api}/categories`, categorysController.createCategory);
+    this.routes("patch", `${api}/categorie/:id`, categorysController.updateCategory);
+    this.routes("delete", `${api}/categorie/:id`, categorysController.deleteCategory);
   }
 }
