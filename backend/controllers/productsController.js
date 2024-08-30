@@ -1,15 +1,18 @@
 import mongoose from "mongoose";
 import Category from "../models/model.category.js";
 import Product from "../models/model.product.js";
+
 const productsController ={
 
     allProduct: async (req,res)=>{
         let filter ={};
         try {
+            //filtrer les résultats en fonction de plusieurs catégories passées dans l'URL
             if(req.query.category){
                 filter = {category:req.query.category.split(',')};
             }
-            const products = await Product.find(filter).select('name image -_id');
+            // fetching products, display only name, image, description,brand and rating and mask id
+            const products = await Product.find(filter).select('name image description brand rating -_id'); 
             res.status(200).json(products);
         } catch (err) {
             res.status(500).json({
@@ -21,6 +24,7 @@ const productsController ={
     },
 
     oneProduct: async (req,res)=>{
+
         if (!mongoose.isValidObjectId(req.params.id)) return res.status(404).json({ message: "l'identifiant de ce produit n'existe pas"});
         
         try {
