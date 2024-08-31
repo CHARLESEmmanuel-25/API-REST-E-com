@@ -10,7 +10,7 @@ export default class ProductsRoutes extends CoreRoutes {
   }
 
   defineRoutes() {
-    this.routes("get", `${api}/products`, productsController.allProduct);
+    this.routes("get", `${api}/`, productsController.allProduct);
     this.routes("get", `${api}/products/:id`,productsController.oneProduct);
     this.routes("get", `${api}/products/get/count`,productsController.countProduct);
     this.routes("get", `${api}/products/get/featured/:count`,productsController.featuredProduct);
